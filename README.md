@@ -1,195 +1,200 @@
-# 🚗 Car Price Prediction using Linear Regression
+# 🚗 Used Car Price Prediction using Linear Regression
+
 ## Overview
 
-This project builds a baseline Machine Learning regression model to predict the selling price of used cars in the Indian market using historical data and vehicle specifications.
+This project implements a **regression-based Machine Learning pipeline** to predict the selling price of used cars in the Indian market using real-world vehicle data.
 
-The objective of this project is learning-focused:
+The repository documents the project in **two clear stages**:
 
-To understand the complete ML pipeline
+* **v1 (Baseline):** Linear Regression with feature engineering and diagnostics
+* **v2 (Current):** Regularized Linear Models (Ridge & Lasso) with cross-validated hyperparameter tuning
 
-To implement Simple & Multiple Linear Regression correctly
+The focus of this project is **conceptual clarity, disciplined preprocessing, and correct model evaluation**, not aggressive optimization or deployment.
 
-To handle real-world data issues such as skewness, missing values, and categorical variables
+---
 
-To evaluate regression models using appropriate metrics and diagnostics
+## Objective
 
-This project is intentionally scoped as a baseline model, not a production-optimized system.
+The primary objectives of this project are to:
+
+* Understand and implement the complete ML regression pipeline
+* Handle real-world data issues (skewness, missing values, categorical variables)
+* Apply feature transformations to improve regression assumptions
+* Compare baseline and regularized linear models
+* Use cross-validation for robust model selection
+* Develop strong intuition around bias–variance tradeoffs
+
+---
 
 ## Problem Statement
 
 The Indian used-car market lacks a standardized pricing mechanism.
-Prices for similar cars vary significantly due to subjective valuation, information asymmetry, and inconsistent market knowledge.
+Prices for similar cars often vary due to subjective valuation, inconsistent market knowledge, and information asymmetry.
 
-This creates challenges for:
+This project aims to **predict a fair selling price** for used cars based on historical listings and vehicle attributes.
 
-Sellers, who may underprice or overprice vehicles
-
-Buyers, who struggle to identify fair market value
-
-The goal of this project is to predict a fair selling price for used cars based on historical data and vehicle attributes.
+---
 
 ## Dataset
 
-Source: CarDekho (Kaggle)
+| Attribute           | Details             |
+| ------------------- | ------------------- |
+| Source              | CarDekho (Kaggle)   |
+| Rows                | ~8,100              |
+| Original Features   | 13                  |
+| Final Feature Count | 44 (after encoding) |
+| Target Variable     | `selling_price`     |
 
-Rows: ~8,100
+### Key Features Used
 
-Features: 13
+* Year of manufacture
+* Kilometers driven
+* Fuel type
+* Seller type
+* Transmission
+* Ownership history
+* Mileage, engine capacity, max power (cleaned from text)
+* Brand (extracted from vehicle name)
 
-Target Variable: selling_price
-
-## Key Features
-
-Year of manufacture
-
-Kilometers driven
-
-Fuel type
-
-Seller type
-
-Transmission
-
-Ownership history
-
-Mileage, engine capacity, and power (cleaned from text)
-
-Brand (extracted from vehicle name)
+---
 
 ## Key Challenges Addressed
 
-Mixed data types (numeric values stored as strings with units)
+* Mixed data types (numeric values stored as strings with units)
+* Missing values across multiple columns
+* Highly right-skewed target variable (`selling_price`)
+* High-cardinality categorical features (car brands)
+* Multicollinearity among technical features
+* Outliers caused by luxury vehicles
 
-Missing values in multiple columns
-
-Highly skewed target variable (selling_price)
-
-High-cardinality categorical features (car brands)
-
-Multicollinearity between technical features
-
-Outliers due to luxury vehicles
+---
 
 ## Approach
+
 ### 1. Data Cleaning & Preprocessing
 
-Extracted numeric values from text columns (mileage, engine, max_power)
+* Extracted numeric values from text-based columns
+* Handled missing values using appropriate imputation
+* Dropped `torque` due to inconsistent formatting and limited predictive value
+* Extracted car brand from vehicle name
+* Created `car_age` from manufacturing year
 
-Handled missing values
+### 2. Encoding & Scaling
 
-Dropped torque due to inconsistent formatting and limited practical value
+* One-Hot Encoding for nominal categorical variables
+* Ordinal Encoding for ownership history
+* Feature scaling using `StandardScaler` for regularized models
 
-Extracted car brand from vehicle name
+### 3. Feature Transformation
 
-One-hot encoded nominal categorical features
+* Log transformation applied to:
 
-Ordinal encoded ownership history
+  * `selling_price` (target)
+  * `km_driven`
+* Reduced skewness and improved regression assumptions
 
-### 2. Feature Transformation
+### 4. Model Building
 
-Applied log transformation to:
+* Linear Regression (baseline)
+* Ridge Regression (L2 regularization)
+* Lasso Regression (L1 regularization)
 
-selling_price
+### 5. Hyperparameter Tuning
 
-km_driven
+* GridSearchCV with 5-fold cross-validation
+* Tuned regularization strength (`alpha`)
+* Models compared on validation and test performance
 
-Reduced skewness and improved regression assumptions
+---
 
-### 3. Model
+## Model Performance Summary
 
-Multiple Linear Regression
+| Model             | Test R² | Adjusted R² | Observation                            |
+| ----------------- | ------- | ----------- | -------------------------------------- |
+| Linear Regression | ~0.88   | ~0.87       | Strong baseline                        |
+| Ridge Regression  | ~0.88   | ~0.87       | Improved coefficient stability         |
+| Lasso Regression  | ~0.88   | ~0.87       | Marginal improvement, minimal sparsity |
 
-Used as a baseline model for interpretability and learning
+### Key Observations
 
-Train–test split based evaluation
+* All models achieved similar performance (~88% R²)
+* Regularization improved stability rather than raw accuracy
+* Low optimal alpha values indicate effective preprocessing
+* Elastic Net reduced to Ridge behavior (`l1_ratio = 0`)
 
-### Evaluation Metrics
+---
 
-R² Score
+## Evaluation Metrics
 
-Adjusted R²
+* R² Score
+* Adjusted R²
+* MAE, MSE, RMSE
 
-Mean Absolute Error (MAE)
+> Error-based metrics were computed after inverse-transforming the target variable to maintain interpretability.
 
-Mean Squared Error (MSE)
+---
 
-Root Mean Squared Error (RMSE)
+## Project Structure
 
-Model Performance (Test Set)
+Car_price_prediction_LR/
+│
+├── data/
+│   └── Vehicle.csv
+│
+├── notebooks/
+│   ├── v1_baseline/
+│   │   └── Car_price_prediction_LR.ipynb
+│   │
+│   └── v2_regularized/
+│       └── Used_Car_price_prediction_LR.ipynb
+│
+├── models/
+│   └── car_price_model.pkl
+│
+├── README.md
+└── requirements.txt
 
-R²: ~0.80+
 
-Adjusted R²: ~0.78+
+---
 
-Residuals approximately normally distributed after log transformation
+## Project Versions
 
-Predictions closely aligned with actual values for low-to-mid priced cars
+* **v1:** Baseline Linear Regression with feature engineering and diagnostics
+* **v2:** Regularized Linear Models with cross-validated hyperparameter tuning
 
-### Note: Error metrics are computed in log-space due to target transformation.
+The stored model represents the **final regularized version** selected after comparison with the baseline.
 
-### Visual Diagnostics
+---
 
-Actual vs Predicted plot
+## Key Learnings
 
-Residual distribution
+* Preprocessing can contribute more than model complexity
+* Regularization improves robustness, not necessarily accuracy
+* Log transformations significantly improve regression behavior
+* Feature stability matters as much as predictive performance
+* Model selection should be driven by data characteristics
 
-Model behavior across price ranges
+---
 
-These plots were used to validate regression assumptions and detect bias.
+## Future Improvements
 
-### Project Scope & Limitations
-#### What This Project Covers
+* Apply tree-based models (Random Forest, Gradient Boosting)
+* Perform systematic feature selection using RFE
+* Add business-focused error metrics (MAPE)
+* Deploy model using a simple web interface
 
-SLR & MLR implementation
-
-Feature engineering
-
-Encoding strategies
-
-Log transformations
-
-Model evaluation & diagnostics
-
-#### What Is Intentionally Not Included
-
-Cross-Validation
-
-VIF-based feature elimination
-
-Regularization (Ridge / Lasso)
-
-Hyperparameter tuning
-
-Tree-based or ensemble models
-
-These topics will be explored in future iterations once the concepts are formally covered.
-
-### Future Improvements
-
-Add cross-validation for robust evaluation
-
-Apply Ridge and Lasso regression
-
-Perform systematic feature selection using VIF
-
-Compare with tree-based models (Random Forest, Gradient Boosting)
-
-Convert predictions back to original price scale for business interpretation
-
-Deploy model using Flask or Streamlit
-
-## Learning Outcome
-
-This project represents a solid baseline regression model built with disciplined ML practices.
-It is intended to demonstrate understanding, decision-making, and clean implementation, not aggressive optimization.
+---
 
 ## Author
 
-Manoj Anil Sabale
+**Mas**
 B.E. Artificial Intelligence & Data Science
-Focused on building strong ML fundamentals before optimization
 
-## 📌 Final Note (Important)
+---
 
-This repository documents a learning milestone, not an end state.
-Future versions will build upon this baseline as more advanced concepts are learned.
+## Final Note
+
+This repository represents a **learning milestone**, not a production system.
+The focus is on **strong ML fundamentals, clean implementation, and correct reasoning** rather than maximum accuracy.
+
+---
